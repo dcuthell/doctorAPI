@@ -71,6 +71,7 @@ fabric.properties
 node_modules/
 .DS_Store
 build/
-temp/
+tmp/
+.env
 
 # End of https://www.gitignore.io/api/intellij
