@@ -58,6 +58,7 @@ $(document).ready(function(){
   $('#doc-list').on('click', '.doc-button', function() {
     let uid = $(this).attr('id');
     $("#doc-list").hide();
+    $("#details-list").show();
     $.get(`https://api.betterdoctor.com/2016-03-01/doctors/${uid}?user_key=${apiKey}`).then(function(response) {
       $('#result-header').text(`Here is some more detailed information on ${response.data.profile.first_name} ${response.data.profile.last_name}`);
       let docInfoString = `<li>Doctor Name: ${response.data.profile.first_name} ${response.data.profile.last_name} ${response.data.profile.title}</li>
