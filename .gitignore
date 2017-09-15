@@ -69,6 +69,7 @@ fabric.properties
 .idea/sonarlint
 
 node_modules/
+bower_components/
 .DS_Store
 build/
 tmp/
