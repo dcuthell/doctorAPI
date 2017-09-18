@@ -25,13 +25,12 @@ $(document).ready(function(){
     }).fail(function(error) {
       $('#result-header').text(error.responseText);
     });
+    $('#details-list').hide();
+    $('#doc-list').show();
   });
 
   $("#name-form").submit(function(event){
     event.preventDefault();
-    let hiDoc = function(){
-      alert("hello doctor");
-    };
     let query = $("#name-input").val();
     $.get(`https://api.betterdoctor.com/2016-03-01/doctors?last_name=${query}&location=or-portland&user_key=${apiKey}`).then(function(response) {
       if(response.data.length == 0){
@@ -53,6 +52,8 @@ $(document).ready(function(){
     }).fail(function(error) {
       $('#result-header').text(error.responseText);
     });
+    $('#details-list').hide();
+    $('#doc-list').show();
   });
 
   $('#doc-list').on('click', '.doc-button', function() {
@@ -79,16 +80,21 @@ $(document).ready(function(){
         if(response.data.practices[i].visit_address.street2 != null){
           suite = response.data.practices[i].visit_address.street2;
         }
+        let website = '';
+        if(response.data.practices[i].website != null){
+          website = `<li><a href="${response.data.practices[i].website}">Practice Website</a></li>`;
+        }
         docInfoString += `<li>
                             <ul>
                               <li>Practice Name: ${response.data.practices[i].name}</li>
                               <li>Address: ${suite} ${response.data.practices[i].visit_address.street}, ${response.data.practices[i].visit_address.zip} </li>
                               <li>Phone: ${phone}</li>
                               <li>Accepts New Patients: ${response.data.practices[i].accepts_new_patients}</li>
+                              ${website}
                             </ul>
                           </li>`;
       }
-      docInfoString += '<button type="button" id="return" class="btn btn-info">Return</button>';
+      docInfoString += `<img src="${response.data.profile.image_url}" alt="No Image"><button type="button" id="return" class="btn btn-info">Return</button>`;
       $('#details-list').html(docInfoString);
     }).fail(function(error) {
       $('#result-header').text(error.responseText);
@@ -96,6 +102,8 @@ $(document).ready(function(){
   });
 
   $('#details-list').on('click', '#return', function() {
+    $('#details-list').text("Loading...");
+    $('#result-header').text("Results from your previous search");
     $('#details-list').hide();
     $('#doc-list').show();
   });
