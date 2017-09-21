@@ -8,6 +8,7 @@ $(document).ready(function(){
     $.get(`https://api.betterdoctor.com/2016-03-01/doctors?query=${query}&location=or-portland&user_key=${apiKey}`).then(function(response) {
       if(response.data.length == 0){
         $('#result-header').text(`No doctors found for your search of ${query}, please retry search!`);
+        $('#doc-list').text("");
       }else{
         $('#result-header').text(`Your search for ${query} has the following results`);
         let docInfoString = "";
@@ -35,14 +36,27 @@ $(document).ready(function(){
     $.get(`https://api.betterdoctor.com/2016-03-01/doctors?last_name=${query}&location=or-portland&user_key=${apiKey}`).then(function(response) {
       if(response.data.length == 0){
         $('#result-header').text(`No doctors found for your search of ${query}, please retry search!`);
+        $('#doc-list').text("");
       }else{
         $('#result-header').text(`Your search for ${query} has the following results`);
         let docInfoString = "";
         for(let i in response.data){
+          let specialties = '';
+          if(response.data[i].specialties){
+            specialties += '<li>Specialty: ';
+            for(let j in response.data[i].specialties){
+              specialties += response.data[i].specialties[j].name;
+              if(response.data[i].specialties[j+1]){
+                specialties += ", ";
+              }
+            }
+            specialties += '</li>'
+          }
+
           docInfoString += `<li>
                               <ul>
                                 <li>Doctor Name: ${response.data[i].profile.first_name} ${response.data[i].profile.last_name} ${response.data[i].profile.title}</li>
-                                <li>Specialty: ${response.data[i].specialties[0].name}</li>
+                                ${specialties}
                                 <button type="button" id="${response.data[i].uid}" class="btn btn-info doc-button">Details</button>
                               </ul>
                             </li>`;
@@ -62,8 +76,19 @@ $(document).ready(function(){
     $("#details-list").show();
     $.get(`https://api.betterdoctor.com/2016-03-01/doctors/${uid}?user_key=${apiKey}`).then(function(response) {
       $('#result-header').text(`Here is some more detailed information on ${response.data.profile.first_name} ${response.data.profile.last_name}`);
+      let specialties = '';
+      if(response.data.specialties){
+        specialties += '<li>Specialty: ';
+        for(let j in response.data.specialties){
+          specialties += response.data.specialties[j].name;
+          if(response.data.specialties[j+1]){
+            specialties += ", ";
+          }
+        }
+        specialties += '</li>'
+      }
       let docInfoString = `<li>Doctor Name: ${response.data.profile.first_name} ${response.data.profile.last_name} ${response.data.profile.title}</li>
-                            <li>Specialty: ${response.data.specialties[0].name}</li>`;
+                            ${specialties}`;
       for(let i in response.data.practices){
         if(i > 0){
           if(response.data.practices[i].name == response.data.practices[i-1].name){
