@@ -1,6 +1,6 @@
-const apiKey = require('./../.env').apiKey;
+import {Doctor as doctorModule} from './../js/doctor.js';
 
-let displayDocList = (results) => {
+let displayDocList = (results, query) => {
   if(results.data.length == 0){
     $('#result-header').text(`No doctors found for your search of ${query}, please retry search!`);
     $('#doc-list').text("");
@@ -20,7 +20,7 @@ let displayDocList = (results) => {
   }
 };
 
-let displayDocsByName = (results) => {
+let displayDocsByName = (results, query) => {
   if(results.data.length == 0){
     $('#result-header').text(`No doctors found for your search of ${query}, please retry search!`);
     $('#doc-list').text("");
@@ -95,12 +95,11 @@ let displayError = (error) => {
 
 
 $(document).ready(function(){
-  let doctorModule = new Doctor();
 
   $("#symptom-form").submit(function(event){
     event.preventDefault();
     let query = $("#symptom-input").val();
-    doctorModule.doctorList(query, doctorList, displayError);
+    doctorModule.doctorList(query, displayDocList, displayError);
     $('#details-list').hide();
     $('#doc-list').show();
   });
@@ -108,14 +107,14 @@ $(document).ready(function(){
   $("#name-form").submit(function(event){
     event.preventDefault();
     let query = $("#name-input").val();
-    doctorModule.doctorsByName(query, doctorList, displayError);
+    doctorModule.doctorsByName(query, displayDocsByName, displayError);
     $('#details-list').hide();
     $('#doc-list').show();
   });
 
   $('#doc-list').on('click', '.doc-button', function() {
     let uid = $(this).attr('id');
-    doctorModule.doctorDetails(uid);
+    doctorModule.doctorDetails(uid, displayDocDetails, displayError);
     $("#doc-list").hide();
     $("#details-list").show();
 
